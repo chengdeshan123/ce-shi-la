@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			span{
+				border: solid 1px;
+			}
+			ul{
+				width: 800px;
+				border: solid 1px;
+				display: flex;
+				justify-content: space-around;
+				flex-wrap: wrap;
+			}
+			li{
+				width: 25%;
+				list-style: none;
+				border: solid 1px;
+				width: 100px;
+				text-align: center;
+				margin: 20px;
+			}
+			.dui{
+				display: block;
+				width:76px;
+				text-align: center;
+				margin-left:11px;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="text"  placeholder="请输入您的新年愿望"/>
+		<button id="add">提交</button>
+		<div>
+			<ul>
+				
+			</ul>
+			
+			
+		</div>
+	</body>
+	<script src="../js/jquery-3.3.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/ajax_v3.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		let bol;
+		$("#add").click(function(){
+			let xy = $("input").val();
+			$.post("/add",{xy:xy,bol:false},(res)=>{
+				if(res.status == 1){
+					console.log("ok");
+					getXy();
+				}
+			})
+		})
+		//渲染
+		getXy()
+		function getXy(){
+			$.get("/msg",(res)=>{
+				console.log(res.data);
+				let arr = res.data;
+				let str = "";
+				for (var i = 0; i < arr.length; i++) {
+					str+=`<li>
+								<span onclick = del('${arr[i]._id}')>点我删除×</span>
+								<p>心愿:${arr[i].xy}</p>
+								<span class= 'dui' _id="${arr[i]._id}">√</span>
+							</li>`
+				}
+				$("ul").html(str)
+			})
+		}
+		//删除
+		function del(id){
+			console.log(id);
+			$.get("/del",{id:id},(res)=>{
+				if(res.status == 1){
+					getXy()
+				}
+			})
+		}
+		
+		function suiji(){
+			
+		}
+		
+		
+		//实现
+		$("ul").on("click",".dui",function(){
+			$.get("/change",{id:$(this).attr("_id")},(res)=>{
+//				if(res.status == 1){
+					console.log(res)
+					if(res[0].bol == true){
+						$(this).css("background","purple");
+					}
+//				}
+			})
+		})
+	</script>
+</html>
